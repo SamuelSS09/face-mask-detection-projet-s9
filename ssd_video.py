@@ -4,12 +4,12 @@ Created on Thu Oct 22 22:22:52 2020
 
 @author: Sophie
 """
-
+import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 import pandas as pd
 from detect_mask import *
-
+from cv2 import VideoCapture
 detector = cv2.dnn.readNetFromCaffe("deploy.prototxt.txt" , "res10_300x300_ssd_iter_140000.caffemodel")
 
 video = cv2.VideoCapture(0)

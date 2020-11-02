@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+w#!/usr/bin/env python
 # coding: utf-8
 
 # Source 1 : https://github.com/HOD101s/Face-Mask-Detection
@@ -316,7 +316,7 @@ model = Sequential()
 model.add(mob)
 model.add(GlobalAveragePooling2D())
 model.add(Dense(64,activation='relu'))
-model.add(Dropout(0.3))
+model.add(Dropout(0.8))
 model.add(Dense(2,activation='softmax'))
 model.summary()
 
