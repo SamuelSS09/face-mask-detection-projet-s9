@@ -17,7 +17,7 @@ video = cv2.VideoCapture(0)
 
 a = 0
 
-model = load_model()
+model = load_model(weights_dir = 'weights/test.h5')
 
 while True:
     a = a+1
@@ -58,12 +58,16 @@ while True:
             #A COMPLETER
             predictions = detect_mask(model,output)
 
-            if predictions[0] > 0.5:
+            if predictions[0] >= 0.5:
+                print(f'mask, iteration {a}')
+                upper_text = f'{100*predictions[0]:2.0f}% certainty of mask presence'
                 cv2.rectangle(frame2,(int(left*aspect_ratio_x),int(top*aspect_ratio_y)),(int(left*aspect_ratio_x)+int(right*aspect_ratio_x)-int(left*aspect_ratio_x),int(top*aspect_ratio_y)+int(bottom*aspect_ratio_y)-int(top*aspect_ratio_y)),(0,255,0),2)
-               # cv2.putText(frame2,f'{predictions[1]:f0.2d} % ',(int(left*aspect_ratio_x),int(top*aspect_ratio_y) -10 ), cv2.FONT_HERSHEY_SIMPLEX,0.8,(255,255,255),2)
+                cv2.putText(frame2,upper_text,(int(left*aspect_ratio_x),int(top*aspect_ratio_y) -10 ), cv2.FONT_HERSHEY_SIMPLEX,0.8,(255,255,255),2)
             elif predictions[1] > 0.5:
+                print(f'no mask, iteration {a}')
+                upper_text = f'{100*predictions[1]:2.0f}% certainty of no mask presence'
                 cv2.rectangle(frame2,(int(left*aspect_ratio_x),int(top*aspect_ratio_y)),(int(left*aspect_ratio_x)+int(right*aspect_ratio_x)-int(left*aspect_ratio_x),int(top*aspect_ratio_y)+int(bottom*aspect_ratio_y)-int(top*aspect_ratio_y)),(0,0,255),2)
-                # cv2.putText(frame2,f'{predictions[1]:f0.2d} % ',(int(left*aspect_ratio_x),int(top*aspect_ratio_y) - 10 ), cv2.FONT_HERSHEY_SIMPLEX,0.8,(255,255,255),2)
+                cv2.putText(frame2,upper_text,(int(left*aspect_ratio_x),int(top*aspect_ratio_y) - 10 ), cv2.FONT_HERSHEY_SIMPLEX,0.8,(255,255,255),2)
 
         roi_color = frame2[int(top*aspect_ratio_y):int(top*aspect_ratio_y)+int(bottom*aspect_ratio_y)-int(top*aspect_ratio_y), int(left*aspect_ratio_x):int(left*aspect_ratio_x)+int(left*aspect_ratio_x)-int(right*aspect_ratio_x)]         
     cv2.imshow("Capturing", frame2)

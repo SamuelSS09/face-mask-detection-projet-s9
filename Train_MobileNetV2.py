@@ -5,7 +5,7 @@
 # 
 # Source 2 : https://github.com/mk-gurucharan/Face-Mask-Detection
 
-# In[2]:
+# In[1]:
 
 
 import numpy as np
@@ -35,9 +35,6 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.callbacks import ModelCheckpoint
 
 
-from tensorflow.python.data.experimental import AUTOTUNE
-
-os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 # 
 # Fetching Our Data.
 # 
@@ -56,7 +53,7 @@ os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 
 
-# In[5]:
+# In[2]:
 
 
 base = ''
@@ -71,7 +68,7 @@ WEIGHTS_PATH = os.path.join(base,'weights/')
 os.makedirs(WEIGHTS_PATH,exist_ok = True)
 WEIGHTS_FILE = os.path.join(WEIGHTS_PATH,'weights_v2.h5')
 
-BATCH_SIZE = 32
+BATCH_SIZE = 8
 EPOCHS = 15
 STEPS_PER_EPOCH = np.floor((2188 + 2400) / BATCH_SIZE ).astype('uint8')
 
@@ -80,7 +77,7 @@ print(STEPS_PER_EPOCH)
 
 # Visualizing our data
 
-# In[8]:
+# In[3]:
 
 
 def view(pth):
@@ -95,14 +92,14 @@ def view(pth):
             i+=1
 
 
-# In[9]:
+# In[4]:
 
 
 NumberMaskData = os.listdir(MASKPATH)
 print(len(NumberMaskData))
 
 
-# In[10]:
+# In[5]:
 
 
 NumberNOMaskData = os.listdir(NOMASKPATH)
@@ -111,14 +108,14 @@ print(len(NumberNOMaskData))
 
 # Analysing our Data
 
-# In[11]:
+# In[6]:
 
 
-# fig = go.Figure(
-#     data=[go.Pie(labels=['WITHMASK','WITHOUTMASK'], 
-#         values=[len(os.listdir(MASKPATH)),len(os.listdir(NOMASKPATH))])
-#     ])
-# fig.show()
+fig = go.Figure(
+    data=[go.Pie(labels=['WITHMASK','WITHOUTMASK'], 
+        values=[len(os.listdir(MASKPATH)),len(os.listdir(NOMASKPATH))])
+    ])
+fig.show()
 
 
 # Splitting Training Test
@@ -131,7 +128,7 @@ print(len(NumberNOMaskData))
 # 
 # So now we split data into train test sets. We'll take around 2% data for testing purposes.
 
-# In[12]:
+# In[7]:
 
 
 # os.mkdir(TESTPATH)
@@ -143,7 +140,7 @@ os.makedirs(os.path.join(TRAINPATH,'mask'), exist_ok = True)
 os.makedirs(os.path.join(TRAINPATH,'no_mask'), exist_ok = True)
 
 
-# In[13]:
+# In[8]:
 
 
 def split_data(SOURCE, TRAINING, TESTING, SPLIT_SIZE):
@@ -189,7 +186,7 @@ split_data(MASKPATH, TRAIN_MASK_PATH, TEST_MASK_PATH, split_size)
 split_data(NOMASKPATH, TRAIN_NOMASK_PATH, TEST_NOMASK_PATH, split_size)
 
 
-# In[14]:
+# In[9]:
 
 
 print("The number of images with facemask in the training set:", len(os.listdir(TRAIN_MASK_PATH)))
@@ -225,7 +222,7 @@ print("The test set mask/no_mask sizes: (",len(os.listdir(TEST_MASK_PATH)),",",l
 
 # Preparing Data Input Pipelines
 
-# In[18]:
+# In[10]:
 
 
 trainGen = ImageDataGenerator(rescale=1.0/255.,
@@ -256,34 +253,33 @@ validation = testGen.flow_from_directory(
     target_size=(128, 128),
     classes=['mask','no_mask'],
     class_mode='categorical', 
-    batch_size=1, 
+    batch_size=BATCH_SIZE, 
     shuffle=False,
 )
 
+
+# In[ ]:
+
+
+
 # merci: https://yann-leguilly.gitlab.io/post/2019-10-09-tensorflow-tfdata/
 
-train_ds = tf.data.Dataset.from_generator(lambda: train,
-                     output_types=(tf.float32, tf.float32),
-                     output_shapes=([None, 128, 128, 3],
-                                    [None, 2])
-                     )
+# train_ds = tf.data.Dataset.from_generator(lambda: train,
+#                      output_types=(tf.float32, tf.float32),
+#                      output_shapes=([BATCH_SIZE, 128, 128, 3],
+#                                     [BATCH_SIZE, 2])
+#                      )
 
-train_ds = train_ds.repeat()
-train_ds = train_ds.prefetch(buffer_size=AUTOTUNE)
-
-valid_ds = tf.data.Dataset.from_generator(lambda: validation,
-                     output_types=(tf.float32, tf.float32) ,
-                     output_shapes=([None, 128, 128, 3],
-                                    [None, 2])
-                     )
-
-valid_ds = valid_ds.take(1148)
+# valid_ds = tf.data.Dataset.from_generator(lambda: validation,
+#                      output_types=(tf.float32, tf.float32),
+#                      output_shapes=([1, 128, 128, 3],
+#                                     [1, 2])
+#                      )
 
 
 # Model Building
 
-# In[19]:
-
+# In[13]:
 
 
 # imgs = list()
@@ -301,10 +297,8 @@ valid_ds = valid_ds.take(1148)
 #         ax[row,col].title.set_text('Mask' if classes[i][0] == 1.0 else 'No mask')
 #         i+=1
 
-# plt.close()
 
-
-# In[20]:
+# In[14]:
 
 
 mob = MobileNetV2(
@@ -315,7 +309,7 @@ mob = MobileNetV2(
 mob.trainable = False
 
 
-# In[21]:
+# In[15]:
 
 
 model = Sequential()
@@ -327,22 +321,22 @@ model.add(Dense(2,activation='softmax'))
 model.summary()
 
 
-# In[22]:
+# In[16]:
 
 
 model.compile(optimizer=Adam(),loss='categorical_crossentropy',metrics=['accuracy'])
 
 
-# In[23]:
+# In[17]:
 
 
 checkpoint = ModelCheckpoint(
-    'weights/model_best.h5',
-    monitor='val_accuracy',
+    'model.h5',
+    monitor='val_loss',
     verbose=1,
-    save_best_only=False,
+    save_best_only=True,
     save_weights_only=True,
-    mode='max'
+    mode='min'
 )
 
 
@@ -350,10 +344,10 @@ checkpoint = ModelCheckpoint(
 
 
 history = model.fit(
-    train_ds,
+    train,
     epochs = EPOCHS,
     steps_per_epoch = STEPS_PER_EPOCH,
-    validation_data = valid_ds,
+    validation_data = validation,
     callbacks = [checkpoint]
 )
 
@@ -361,7 +355,7 @@ history = model.fit(
 # In[ ]:
 
 
-model.save_weights(WEIGHTS_FILE)
+# model.save_weights(WEIGHTS_FILE)
 
 
 # In[ ]:
@@ -375,7 +369,7 @@ plt.ylabel('accuracy')
 plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.grid()
-plt.savefig('fig1.png')
+plt.savefig('')
 plt.show()
 # summarize history for loss
 plt.plot(history.history['loss'])
@@ -385,6 +379,5 @@ plt.ylabel('loss')
 plt.xlabel('epoch')
 plt.legend(['train', 'test'], loc='upper left')
 plt.grid()
-plt.savefig('fig2.png')
 plt.show()
 
