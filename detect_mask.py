@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 
 
-def load_model(weights_dir = 'weights/weights.h5'):
+def load_model(weights_dir = 'weights/MobileNetV2_n_dataset.h5'):
 	model = classifier_MobileNetV2()
 	model.load_weights(weights_dir)
 	return model
