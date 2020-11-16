@@ -17,7 +17,7 @@ video = cv2.VideoCapture(0)
 
 a = 0
 
-model = load_model(weights_dir = 'weights/test.h5')
+model = load_model(weights_dir = 'weights/MobileNetV2_n_dataset.h5')
 
 while True:
     a = a+1
