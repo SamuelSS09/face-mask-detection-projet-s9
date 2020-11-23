@@ -1,7 +1,7 @@
 from detect_mask import *
 
 
-m = load_model()
+m = load_model('model.h5')
 
 
 

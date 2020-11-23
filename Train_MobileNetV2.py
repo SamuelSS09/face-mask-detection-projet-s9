@@ -1,4 +1,4 @@
-w#!/usr/bin/env python
+#!/usr/bin/env python
 # coding: utf-8
 
 # Source 1 : https://github.com/HOD101s/Face-Mask-Detection
@@ -68,8 +68,8 @@ WEIGHTS_PATH = os.path.join(base,'weights/')
 os.makedirs(WEIGHTS_PATH,exist_ok = True)
 WEIGHTS_FILE = os.path.join(WEIGHTS_PATH,'weights_v2.h5')
 
-BATCH_SIZE = 8
-EPOCHS = 15
+BATCH_SIZE = 10
+EPOCHS = 2
 STEPS_PER_EPOCH = np.floor((2188 + 2400) / BATCH_SIZE ).astype('uint8')
 
 print(STEPS_PER_EPOCH)
@@ -305,8 +305,10 @@ mob = MobileNetV2(
     input_shape = (128,128,3),
     include_top = False,
     weights = 'imagenet',
+    classes=2,
+    classifier_activation="softmax",
 )
-mob.trainable = False
+mob.trainable = True
 
 
 # In[15]:

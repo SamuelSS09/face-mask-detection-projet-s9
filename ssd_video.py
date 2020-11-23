@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from detect_mask import *
 from cv2 import VideoCapture
+
 detector = cv2.dnn.readNetFromCaffe("deploy.prototxt.txt" , "res10_300x300_ssd_iter_140000.caffemodel")
 
 video = cv2.VideoCapture(0)
@@ -17,7 +18,7 @@ video = cv2.VideoCapture(0)
 
 a = 0
 
-model = load_model(weights_dir = 'weights/test.h5')
+model = load_model(weights_dir = 'model.h5')
 
 while True:
     a = a+1
@@ -40,7 +41,7 @@ while True:
     detections_df = pd.DataFrame(faces[0][0], columns = column_labels)
     
     detections_df = detections_df[detections_df['is_face'] == 1]
-    detections_df = detections_df[detections_df['confidence']>0.90]
+    detections_df = detections_df[detections_df['confidence']>0.70]
 
     detections_df['left'] = (detections_df['left'] * 300).astype(int)
     detections_df['bottom'] = (detections_df['bottom'] * 300).astype(int)
@@ -54,7 +55,7 @@ while True:
         output = frame2[int(top*aspect_ratio_y):int(bottom*aspect_ratio_y), int(left*aspect_ratio_x): int(right*aspect_ratio_x)]
         cv2.rectangle(frame2,(int(left*aspect_ratio_x),int(top*aspect_ratio_y)),(int(left*aspect_ratio_x)+int(right*aspect_ratio_x)-int(left*aspect_ratio_x),int(top*aspect_ratio_y)+int(bottom*aspect_ratio_y)-int(top*aspect_ratio_y)),(255,255,255),2)
         #print(output)
-        if confidence_score>90:
+        if confidence_score>70:
             #A COMPLETER
             predictions = detect_mask(model,output)
 
