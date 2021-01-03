@@ -18,7 +18,7 @@ video = cv2.VideoCapture(0)
 
 a = 0
 
-model = load_model(weights_dir = 'model.h5')
+model = load_model(weights_dir = 'weights/model_best.h5')
 
 while True:
     a = a+1

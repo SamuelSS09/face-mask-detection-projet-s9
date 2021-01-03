@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from detect_mask import *
 from cv2 import VideoCapture
+
 detector = cv2.dnn.readNetFromCaffe("deploy.prototxt.txt" , "res10_300x300_ssd_iter_140000.caffemodel")
 
 video = cv2.VideoCapture(0)
@@ -17,7 +18,7 @@ video = cv2.VideoCapture(0)
 
 a = 0
 
-model = load_model(weights_dir = 'weights/3class_MobileNetV2_V2_20_epochs_64.h5',n_classes = 3)
+model = load_model(weights_dir = 'weights/3classes_FineTunning_mobTrainable.h5',n_classes = 3,whole_model = True)
 
 while True:
     a = a+1
@@ -71,7 +72,7 @@ while True:
             elif predictions[2] > 0.33:
                 print(f'improper mask, iteration {a}')
                 upper_text = f'{100*predictions[2]:2.0f}% certainty of improper mask presence'
-                cv2.rectangle(frame2,(int(left*aspect_ratio_x),int(top*aspect_ratio_y)),(int(left*aspect_ratio_x)+int(right*aspect_ratio_x)-int(left*aspect_ratio_x),int(top*aspect_ratio_y)+int(bottom*aspect_ratio_y)-int(top*aspect_ratio_y)),(255,0,),2)
+                cv2.rectangle(frame2,(int(left*aspect_ratio_x),int(top*aspect_ratio_y)),(int(left*aspect_ratio_x)+int(right*aspect_ratio_x)-int(left*aspect_ratio_x),int(top*aspect_ratio_y)+int(bottom*aspect_ratio_y)-int(top*aspect_ratio_y)),(255,0,0),2)
                 cv2.putText(frame2,upper_text,(int(left*aspect_ratio_x),int(top*aspect_ratio_y) - 10 ), cv2.FONT_HERSHEY_SIMPLEX,0.8,(255,255,255),2)
 
         roi_color = frame2[int(top*aspect_ratio_y):int(top*aspect_ratio_y)+int(bottom*aspect_ratio_y)-int(top*aspect_ratio_y), int(left*aspect_ratio_x):int(left*aspect_ratio_x)+int(left*aspect_ratio_x)-int(right*aspect_ratio_x)]         
