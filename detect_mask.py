@@ -50,9 +50,34 @@ def detect_mask_3_classes(model,img):
         img_resized = cv2.resize(img, (128, 128) ,interpolation = cv2.INTER_CUBIC)
         img_resized = (img_resized[np.newaxis,:]/255.).astype('float32')
         prediction =  model.predict(img_resized)
-        print([prediction[0,0] , prediction[0,1] ,prediction[0,2] ])
         return [prediction[0,0] , prediction[0,1] ,prediction[0,2] ]
 
     except Exception as e:
         print('Mask detection: exception ! ')
         return [-1, -1, -1]
+
+	
+def detect_mask_3_classes_write(model,img,a):
+
+    try: 
+
+        img_resized = cv2.resize(img, (128, 128) ,interpolation = cv2.INTER_CUBIC)
+        img_resized = (img_resized[np.newaxis,:]/255.).astype('float32')
+        prediction =  model.predict(img_resized)
+		
+		if predictions[0] >= 0.33 :
+			cv2.imwrite(f'datasets/Testset/no_mask/{a:04d}.png',img_resized)
+		elif predictions[1] > 0.33 :
+			cv2.imwrite(f'datasets/Testset/well_ported_mask/{a:04d}.png',img_resized)
+		elif predictions[2] > 0.33 :
+			cv2.imwrite(f'datasets/Testset/wrong_ported_mask/{a:04d}.png',img_resized)
+		
+		return [prediction[0,0] , prediction[0,1] ,prediction[0,2] ]
+
+    except Exception as e:
+        print('Mask detection: exception ! ')
+        return [-1, -1, -1]
+
+
+
+				

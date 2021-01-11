@@ -57,7 +57,8 @@ while True:
         #print(output)
         if confidence_score>90:
             #A COMPLETER
-            predictions = detect_mask_3_classes(model,output)
+            # predictions = detect_mask_3_classes(model,output)
+            predictions = detect_mask_3_classes_write(model,output,a)
 
             if predictions[0] >= 0.33:
                 print(f'no mask, iteration {a}')
