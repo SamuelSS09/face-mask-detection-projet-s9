@@ -33,50 +33,48 @@ def load_model(weights_dir = 'weights/test.h5',n_classes = 2,whole_model = False
 def detect_mask(model,img ):
 
 	try: 
-
 		img_resized = cv2.resize(img, (128, 128) ,interpolation = cv2.INTER_CUBIC)
 		img_resized = (img_resized[np.newaxis,:]/255.).astype('float32')
 		prediction =  model.predict(img_resized)
 		return [prediction[0,0] , prediction[0,1]]
-
+		
 	except Exception as e:
 		print('Mask detection: exception !')
 		return [-1, -1]
 
 def detect_mask_3_classes(model,img):
 
-    try: 
-
-        img_resized = cv2.resize(img, (128, 128) ,interpolation = cv2.INTER_CUBIC)
-        img_resized = (img_resized[np.newaxis,:]/255.).astype('float32')
-        prediction =  model.predict(img_resized)
-        return [prediction[0,0] , prediction[0,1] ,prediction[0,2] ]
-
-    except Exception as e:
-        print('Mask detection: exception ! ')
-        return [-1, -1, -1]
+	try: 
+		img_resized = cv2.resize(img, (128, 128) ,interpolation = cv2.INTER_CUBIC)
+		img_resized = (img_resized[np.newaxis,:]/255.).astype('float32')
+		prediction =  model.predict(img_resized)
+		return [prediction[0,0] , prediction[0,1] ,prediction[0,2] ]
+	
+	except Exception as e:
+		print('Mask detection: exception ! ')
+		return [-1, -1, -1]
 
 	
 def detect_mask_3_classes_write(model,img,a):
 
-    try: 
-
-        img_resized = cv2.resize(img, (128, 128) ,interpolation = cv2.INTER_CUBIC)
-        img_resized = (img_resized[np.newaxis,:]/255.).astype('float32')
-        prediction =  model.predict(img_resized)
-		
+	try:
+		img_resized = cv2.resize(img, (128, 128) ,interpolation = cv2.INTER_CUBIC)
+		img_write = img_resized
+		img_resized = (img_resized[np.newaxis,:]/255.).astype('float32')
+		prediction =  model.predict(img_resized)
+		predictions = [prediction[0,0] , prediction[0,1] ,prediction[0,2] ]
 		if predictions[0] >= 0.33 :
-			cv2.imwrite(f'datasets/Testset/no_mask/{a:04d}.png',img_resized)
+			print('bla')
+			cv2.imwrite(f'datasets/Testset/no_mask/{a:04d}.png',img_write)
 		elif predictions[1] > 0.33 :
-			cv2.imwrite(f'datasets/Testset/well_ported_mask/{a:04d}.png',img_resized)
+			cv2.imwrite(f'datasets/Testset/well_ported_mask/{a:04d}.png',img_write)
 		elif predictions[2] > 0.33 :
-			cv2.imwrite(f'datasets/Testset/wrong_ported_mask/{a:04d}.png',img_resized)
-		
+			cv2.imwrite(f'datasets/Testset/wrong_ported_mask/{a:04d}.png',img_write)
 		return [prediction[0,0] , prediction[0,1] ,prediction[0,2] ]
 
-    except Exception as e:
-        print('Mask detection: exception ! ')
-        return [-1, -1, -1]
+	except Exception as e:
+		print('Mask detection: exception ! ')
+		return [-1, -1, -1]
 
 
 
