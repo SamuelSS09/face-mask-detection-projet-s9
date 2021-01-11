@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from detect_mask import *
 from cv2 import VideoCapture
+import time
 
 detector = cv2.dnn.readNetFromCaffe("deploy.prototxt.txt" , "res10_300x300_ssd_iter_140000.caffemodel")
 
@@ -18,7 +19,7 @@ video = cv2.VideoCapture(0)
 
 a = 0
 
-model = load_model(weights_dir = 'weights/3classes_FineTunning_mobTrainable.h5',n_classes = 3,whole_model = True)
+model = load_model(weights_dir = 'weights/3classes_fineTunning_mobTrainable.h5',n_classes = 3,whole_model = True)
 
 while True:
     a = a+1
@@ -57,20 +58,22 @@ while True:
         #print(output)
         if confidence_score>90:
             #A COMPLETER
+            start = time.time()
             predictions = detect_mask_3_classes(model,output)
+            print(f'Elapsed classification time {(time.time() - start):.8f} s')
             # predictions = detect_mask_3_classes_write(model,output,a)
-
-            if predictions[0] >= 0.33:
+            mask_case = np.argmax(predictions)
+            if mask_case == 0:
                 print(f'no mask, iteration {a}')
                 upper_text = f'{100*predictions[0]:2.0f}% certainty of no mask presence'
                 cv2.rectangle(frame2,(int(left*aspect_ratio_x),int(top*aspect_ratio_y)),(int(left*aspect_ratio_x)+int(right*aspect_ratio_x)-int(left*aspect_ratio_x),int(top*aspect_ratio_y)+int(bottom*aspect_ratio_y)-int(top*aspect_ratio_y)),(0,0,255),2)
                 cv2.putText(frame2,upper_text,(int(left*aspect_ratio_x),int(top*aspect_ratio_y) - 10 ), cv2.FONT_HERSHEY_SIMPLEX,0.8,(255,255,255),2)
-            elif predictions[1] > 0.33:
+            elif mask_case ==  1:
                 print(f'mask, iteration {a}')
                 upper_text = f'{100*predictions[1]:2.0f}% certainty of mask presence'
                 cv2.rectangle(frame2,(int(left*aspect_ratio_x),int(top*aspect_ratio_y)),(int(left*aspect_ratio_x)+int(right*aspect_ratio_x)-int(left*aspect_ratio_x),int(top*aspect_ratio_y)+int(bottom*aspect_ratio_y)-int(top*aspect_ratio_y)),(0,255,0),2)
                 cv2.putText(frame2,upper_text,(int(left*aspect_ratio_x),int(top*aspect_ratio_y) -10 ), cv2.FONT_HERSHEY_SIMPLEX,0.8,(255,255,255),2)
-            elif predictions[2] > 0.33:
+            elif mask_case == 2:
                 print(f'improper mask, iteration {a}')
                 upper_text = f'{100*predictions[2]:2.0f}% certainty of improper mask presence'
                 cv2.rectangle(frame2,(int(left*aspect_ratio_x),int(top*aspect_ratio_y)),(int(left*aspect_ratio_x)+int(right*aspect_ratio_x)-int(left*aspect_ratio_x),int(top*aspect_ratio_y)+int(bottom*aspect_ratio_y)-int(top*aspect_ratio_y)),(255,0,0),2)
