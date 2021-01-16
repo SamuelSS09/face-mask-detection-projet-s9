@@ -6,6 +6,8 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.applications import MobileNetV2
 from tensorflow.keras.layers import Dense, Dropout, GlobalMaxPool2D , GlobalAveragePooling2D
 
+import timeit
+
 
 mob = MobileNetV2(
 	input_shape = (128,128,3),
@@ -43,6 +45,8 @@ def detect_mask(model,img ):
 		return [-1, -1]
 
 def detect_mask_3_classes(model,img):
+
+
 
 	try: 
 		img_resized = cv2.resize(img, (128, 128) ,interpolation = cv2.INTER_CUBIC)

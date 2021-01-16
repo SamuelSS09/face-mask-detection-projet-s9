@@ -19,7 +19,7 @@ video = cv2.VideoCapture(0)
 
 a = 0
 
-model = load_model(weights_dir = 'weights/3classes_fineTunning_mobTrainable.h5',n_classes = 3,whole_model = True)
+model = load_model(weights_dir = 'weights/3classes_fineTunning_MobTrainable.h5',n_classes = 3,whole_model = True)
 
 while True:
     a = a+1
